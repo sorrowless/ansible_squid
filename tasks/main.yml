@@ -2,7 +2,7 @@
 - name: Install Squid
   package:
     name: squid
-    state: latest
+    state: present
 
 - name: Configure squid.conf
   template:
