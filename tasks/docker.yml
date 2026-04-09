@@ -123,4 +123,4 @@
       run_once: True
       loop: "{{ squid_docker_services }}"
   delegate_to: "{{ squid_swarm_manager }}"
-  when: squid_swarm_manager is defined
+  when: squid_swarm_cluster

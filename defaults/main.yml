@@ -15,6 +15,8 @@ squid_type_private_registry: ""
 squid_volumes:
   - "{{ squid_conf_dir }}/squid.conf:/etc/squid/squid.conf"
 
+squid_swarm_cluster: false
+
 squid_docker_services:
   - name: squid
 
