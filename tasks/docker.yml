@@ -55,8 +55,7 @@
         squid-proxy:
           image: "{{ squid_docker_image }}:{{ squid_version }}"
           container_name: "{{ squid_container_name }}"
-          ports:
-            - {target: 3128, published: 3128, protocol: tcp, mode: host}
+          ports: "{{ squid_ports }}"
           restart: always
           volumes: "{{ squid_volumes }}"
       networks:
@@ -112,7 +111,8 @@
                     "hostname": item.name,
                     "labels": squid_docker_labels | default([]),
                     "deploy": squid_swarm_deploy,
-                    "volumes": squid_volumes
+                    "volumes": squid_volumes,
+                    "ports": squid_ports
                   }
                 }
               }}

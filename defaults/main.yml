@@ -15,6 +15,12 @@ squid_type_private_registry: ""
 squid_volumes:
   - "{{ squid_conf_dir }}/squid.conf:/etc/squid/squid.conf"
 
+squid_ports:
+  - target: 3128
+    published: 3128
+    protocol: tcp
+    mode: host
+
 squid_swarm_cluster: false
 
 squid_docker_services:
