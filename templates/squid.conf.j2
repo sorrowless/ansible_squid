@@ -1,0 +1,6 @@
+{{ squid_config }}
+
+{% for row in squid_whitelist %}
+acl {{ row }} url_regex .*{{ row }}.*
+http_access allow {{ row }}
+{% endfor %}

@@ -1,4 +1,30 @@
 ---
+## General
+squid_dockerize: true
+squid_version: 1.3.1
+squid_conf_dir: /var/lib/squid
+
+## Docker
+# Use only with squid_dockerize = true 
+squid_docker_image: ubuntu/squid
+squid_container_name: squid-proxy
+squid_docker_network_name: squid
+squid_use_private_registry: false
+# yc_cr - Yandex Cloud Container Registry
+squid_type_private_registry: ""
+squid_volumes:
+  - "{{ squid_conf_dir }}/squid.conf:/etc/squid/squid.conf"
+
+squid_docker_services:
+  - name: squid
+
+squid_swarm_deploy:
+  mode: replicated
+  replicas: 1
+  placement:
+    constraints:
+      - node.labels.squid == true
+
 # Whitelist of host which will be allowed to use proxy w/o password
 squid_whitelist: []
 # basic auth dict with username/password
@@ -8,3 +34,37 @@ squid_auth: {
   user: turtle,
   pass: $apr1$86UP86dQ$9pO0f7VVqlWanpFDAdVgB/
 }
+
+squid_config: |
+  acl SSL_ports port 443
+  acl Safe_ports port 80          # http
+  acl Safe_ports port 21          # ftp
+  acl Safe_ports port 443         # https
+  acl Safe_ports port 70          # gopher
+  acl Safe_ports port 210         # wais
+  acl Safe_ports port 1025-65535  # unregistered ports
+  acl Safe_ports port 280         # http-mgmt
+  acl Safe_ports port 488         # gss-http
+  acl Safe_ports port 591         # filemaker
+  acl Safe_ports port 777         # multiling http
+  acl CONNECT method CONNECT
+
+  auth_param basic program /usr/lib/squid3/basic_ncsa_auth /etc/squid/.htpasswd
+  acl ncsa_users proxy_auth REQUIRED
+  http_access allow ncsa_users
+
+  http_access deny !Safe_ports
+  http_access deny CONNECT !SSL_ports
+  http_access allow localhost manager
+  http_access deny manager
+  http_access allow localhost
+
+  http_access deny all
+
+  http_port 3128
+  coredump_dir /var/spool/squid
+  refresh_pattern ^ftp:           1440    20%     10080
+  refresh_pattern ^gopher:        1440    0%      1440
+  refresh_pattern -i (/cgi-bin/|\?) 0     0%      0
+  refresh_pattern (Release|Packages(.gz)*)$      0       20%     2880
+  refresh_pattern .               0       20%     4320
