@@ -15,6 +15,19 @@
     owner: root
     group: root
 
+- name: Squid | Validate config
+  community.docker.docker_container:
+    name: squid-config-check
+    image: "{{ squid_docker_image }}:{{ squid_version }}"
+    state: started
+    detach: false
+    cleanup: true
+    log_driver: json-file
+    command: >
+      squid -k parse -f /etc/squid/squid.conf
+    volumes:
+      - "{{ squid_conf_dir }}/squid.conf:/etc/squid/squid.conf:ro"
+
 - name: Squid | Check container registry type
   assert:
     that: 
